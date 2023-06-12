@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, jsonify
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -26,18 +26,18 @@ def extract_keypoints(results):
 def draw_styled_landmarks(image, results):
     
     mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-                             mp_drawing.DrawingSpec(color=(80,22,10), thickness=2, circle_radius=4), 
-                             mp_drawing.DrawingSpec(color=(80,44,121), thickness=2, circle_radius=2)
+                             mp_drawing.DrawingSpec(color=(0,0,0), thickness=2, circle_radius=4), 
+                             mp_drawing.DrawingSpec(color=(208,224,64), thickness=2, circle_radius=2)
                              ) 
     
     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                             mp_drawing.DrawingSpec(color=(121,22,76), thickness=2, circle_radius=4), 
-                             mp_drawing.DrawingSpec(color=(121,44,250), thickness=2, circle_radius=2)
+                             mp_drawing.DrawingSpec(color=(0,0,0), thickness=2, circle_radius=4), 
+                             mp_drawing.DrawingSpec(color=(0,252,124), thickness=2, circle_radius=2)
                              ) 
       
     mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS, 
-                             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=4), 
-                             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+                             mp_drawing.DrawingSpec(color=(0,0,0), thickness=2, circle_radius=4), 
+                             mp_drawing.DrawingSpec(color=(31,95,255), thickness=2, circle_radius=2)
                              ) 
 
 actions = np.array(['Indian', 'Sign', 'Language', 'Man', 'Woman', 'Namaste', 'Deaf', 'Sorry', 'Happy', 'Sad', 'Understand', 'Bye', 'Please', 'Food', 'Water'])
@@ -100,9 +100,9 @@ def sign_lang():
                 count = count - 2   
 
                 
-            cv2.rectangle(image, (0,0), (count*15, 40), (245, 117, 16), -1)
-            cv2.putText(image,''.join(sentence), (15,30), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.rectangle(image, (0,0), (count*18, 40), (255, 0, 255), -1)
+            cv2.putText(image,''.join(sentence), (20,30), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             
 
             ret, buffer = cv2.imencode('.jpg', image)
@@ -115,6 +115,8 @@ def sign_lang():
                 break
         cap.release()
         cv2.destroyAllWindows()
+
+    # return jsonify ('pink bubble')
 
 @app.route('/video_feed')
 def video_feed():
@@ -131,4 +133,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
+    # app.run(debug=False, port=5000, host='0.0.0.0')
